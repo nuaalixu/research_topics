@@ -12,7 +12,7 @@
 
 
 
-# MULTIFRAME DEEP NEURAL NETWORKS FOR ACOUSTIC MODELING
+## MULTIFRAME DEEP NEURAL NETWORKS FOR ACOUSTIC MODELING
 
 > This paper presents a novel approach to training DNNs for hybrid systems which compares advantageously in terms of decoding complexity at equivalent accuracy to the standard approach
 
