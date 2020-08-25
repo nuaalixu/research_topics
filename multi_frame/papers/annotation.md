@@ -31,3 +31,16 @@
 训练时，input low frame rate，label frame rate不变。
 
 解码时，同训练。
+
+## Multi-Frame Cross-Entropy Training for Convolutional Neural Networks in Speech Recognition
+> To adapt modern CNNs to ASR, three aspects need some care.
+>
+> Firstly, before the output layer, the convolutional pathway feeds into a stack of fully connected (FC) layers.
+>
+> Secondly, in the domain of speech, [3] says to avoid padding the convolutional layers in the time dimension, as this would prevent efficient full-utterance processing at test time.
+>
+> Thirdly, for efficient sequence prediction with CNNs, we additionally replace pooling in time with time-dilated convolutions
+
+MFCE: 将多个相邻帧的CE loss联立
+
+对于 full utterance cross-entropy training 来说，无效
