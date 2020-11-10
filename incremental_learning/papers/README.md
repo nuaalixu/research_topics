@@ -1,8 +1,23 @@
 # 论文笔记
 
-## Incremental Learning for End-to-End Automatic Speech Recognition
+# PODNet: Pooled Outputs Distillation for Small-Tasks Incremental Learning
 
 incremental learning要克服的问题：catastrophic forgetting
+
+> incremental learning is different from transfer learning in that we aim to have good performance in both old and new classes.
+
+现有的增量学习方法: 
+
+1. reusing a limited amount of previous training data [33,3]; 
+
+2. learning to generate the training data [17,36]; 
+3. extending the architecture for new phases of data [39,22]; 
+4. using a sub-network for each phase [7,11]; 
+5. constraining the model divergence as it evolves [18,25,1,23,33,3].
+
+
+
+## Incremental Learning for End-to-End Automatic Speech Recognition
 
 **incremental learning 主要分为三类:**
 
@@ -41,12 +56,6 @@ ctc loss + distilling loss（KL散度）
 > catastrophic forgetting issue.
 
 ***Speech Enhancement:*** *The objective of speech enhancement (SE) is to transform low-quality speech signals into enhanced-quality speech signals.*
-
-
-
-## Incremental Classifier Learning with Generative Adversarial Networks
-
-
 
 ## Learning without Forgetting
 
@@ -107,4 +116,3 @@ loss function，包含distillation loss（KLD)和CE loss：
 $$L = \Lambda L_d + (1 - \Lambda) L_c$$
 
 利用GANs 生成exemplars，和new data 一起训练。
-
