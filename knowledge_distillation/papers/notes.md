@@ -16,7 +16,7 @@ provide much more information per training case than hard targets and much less 
 
 问题：当soft target的置信度很高时，其他incorrect的概率接近与零，直接计算，对于交叉熵 loss的影响很小
 
-解决思路一：去log，log能够向下规整
+解决思路一：取log，log能够向下规整
 
 **如何生成soft target**
 

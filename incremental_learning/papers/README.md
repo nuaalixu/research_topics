@@ -1,6 +1,6 @@
 # 论文笔记
 
-# PODNet: Pooled Outputs Distillation for Small-Tasks Incremental Learning
+## PODNet: Pooled Outputs Distillation for Small-Tasks Incremental Learning
 
 incremental learning要克服的问题：catastrophic forgetting
 
@@ -87,6 +87,12 @@ CE（loss），学习new task能力
 
 ![](https://raw.githubusercontent.com/nuaalixu/picBed/master/PicGo/Procedure for Learning without Forgetting.png)
 
+### Remark
+
+通过distillation loss来保留旧任务的信息。
+
+> This very strategy can cause issues if the data for the new task belongs to a distribution different from that of prior tasks
+
 ## iCaRL: Incremental Classifier and Representation Learning
 
 > **iCaRL**：incremental classifier and representation learning
@@ -116,3 +122,70 @@ loss function，包含distillation loss（KLD)和CE loss：
 $$L = \Lambda L_d + (1 - \Lambda) L_c$$
 
 利用GANs 生成exemplars，和new data 一起训练。
+
+## Recall and Learn: Fine-tuning Deep Pretrained Language Models with Less Forgetting
+
+*Sequential Transfer Learning*:
+
+​	learns source tasks and target tasks in sequence, and transfers knowledge from source tasks to improve the models' performance on target tasks
+
+* pretraining
+* adaptation
+  - fine-tuning
+  - feature extraction: freezing some weights
+
+*Multi-task Learning*:
+
+​	learns multiple tasks simutaneously
+
+*Elastic Weight Consolidation(EWC)*: 正则手段，限制对原任务重要的参数，调整其他的参数
+
+本文方法包括两种机制：
+
+- Pretraining Simulation
+- Objective Shifting
+
+### Pretraining Simulation
+
+使用了一系列的近似优化方法将pretraining tasks的训练目标Loss_S近似推导为一个不依赖于pretraining data而只依赖于pretrained model的二次惩罚项。
+论文中的公式推导借鉴并基于EWC方法，通过使用Laplaces方法和模型参数之间的独立性假设，对于pretraining tasks的训练目标$Loss_S$进行近似优化的完整过程。
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/PicGo/pretraining%20simulation.png" style="zoom:80%;" />
+
+### Objective Shifting
+
+ to allow the objective function to gradually shift to $Loss_T$ with the **annealing coefficient**.
+
+将普通multi-task loss中的常数权重$\lambda$替换为关于时间的退火函数$\lambda(t)$：
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/PicGo/objective%20shifting.png" style="zoom:80%;" />
+
+退火函数：
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/PicGo/annealing%20function.png" style="zoom:80%;" />
+
+其中，$k$和$t_0$分别控制退火率和时间步的超参。
+
+### Algorithm
+
+将本算法放在优化器部分实现，结合Adam，构建RecAdam
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/PicGo/Algorithm%201%20Adam%20and%20RecAdam.png" style="zoom:80%;" />
+
+### Remark
+
+本质上，通过初始权重，作为正则项，保存older task信息。
+
+通过退火系数，权衡新旧任务的比重。
+
+## PackNet: Adding Multiple Tasks to a Single Network by Iterative Pruning
+
+### Remark
+
+模型结构，每个task拥有专属的parameters，和一个对应的mask，mask用于pruning。同时，各task拥有shared parameters。
+
+训练时，各task按顺序依次训练。每个task训练时，先用mask“剪枝”，相当于固定其他task的专属参数和共享参数，再调整本task的专属参数。
+
+推理时，通过每个task对应的mask，来”屏蔽”其他task的专属参数，以使当前模型“转换”为该task的专属模型。
+
+Pruning的意义在于，保持模型性能不下降的条件下，减少每个task需要的模型参数量。
