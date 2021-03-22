@@ -74,6 +74,8 @@ CNN应用于ASC的基础型文章。同时也提到了以往ASC的方法，比�
 
 #### Two-Stage Classification Procedure
 
+![](https://raw.githubusercontent.com/nuaalixu/picBed/master/PicGo/two-stage%20ASC%20system.png)
+
 第一步：粗分类，in-door、out-door、transporation三个场景
 
 第二部：细分类，十个场景
@@ -84,7 +86,7 @@ Class(x)=\mathop{argmax}_{q,(p{\in}C^1,q{\in}C^2,p{\supset}q)}F^1_p(x)*F^2_q(x)
 $$
 其中$p{\supset}q$表示p是q的超集，比如transportation是bus、tram和metro的超集。
 
-#### Ensemble
+#### Model ensemble
 
 使用三种不同的CNN结构，训练模型，Resnet，FCNN，fsFCNN
 
@@ -92,14 +94,31 @@ $$
 
 generate extra data：
 
-* 
+* spectrum correction：使用除设备A外的其他设备的所有频谱的均值作为reference device spectrum，计算设备A的修正系数，然后修正设备A的频谱，作为扩充数据。
+* reverberation with dynamic range compression：用rirs对设备A的音频造混响，然后DRC去压缩混响音频的幅值
+* pitch shift：均匀分布
+* random noise：高斯噪声
+* mix audios：随机mix两条相通场景的音频
 
 not：
 
 * mixup
 * random cropping
 * specaugment
-* 
+
+#### experiment
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/PicGo/nerual%20saliency%20analysis%20via%20CAM%20in%20ASC.png" style="zoom:80%;" />
+
+> Human beings would use the bus-station announcement to make ASC decision; however, the CNN cannot perform speech recognition.
+
+通过CAM形成的热图，可以看到，不管是3分类，还是10分类，模型更关注于声学事件发生的片段。
+
+### Remark
+
+本文，采用两步分类法：粗分类，细分类。
+
+通过基于CAM的神经显著性分析法，证明CNNs通过关注发生声学事件的片段来判断场景，而不是简单的从背景环境音提取信息做判断。
 
 ## ACOUSTIC SCENE CLASSIFICATION USING DEEP RESIDUAL NETWORKS WITH LATE FUSION OF SEPARATED HIGH AND LOW FREQUENCY PATHS
 
@@ -163,15 +182,17 @@ spectrum correction
 
 ## 本文方法
 
-heated-up softmax embedding 
+两点解决不匹配：
 
-spectrum correction
+* spectrum correction
 
-focal loss
-
-CNN
+* heated-up softmax embedding 
 
 #### 模型结构
+
+CNN（Conv2D-ReLU-BN)
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/PicGo/system%20for%20mismatched%20recording%20device%20in%20asc.png" style="zoom:80%;" />
 
 #### spectrum corrction
 
@@ -204,3 +225,108 @@ $$
 FL(p,y)=-\sum^C_{j=1}(1-p_j)^{\gamma}y_ilog(p_j)
 $$
 其中，通过缩放系数$（1-p_j)^{\gamma}$来控制ce loss的focus到易错类。
+
+focal loss 在本文中无明显提升，仅为了平等对比。
+
+#### Heated-up Softmax
+
+即smoothing后验概率
+
+设输入给softmax前的激活值logit为$z_j$，分类概率$p_j$:
+$$
+p_j=\frac{exp(z_j/T)}{\sum^C_{m=1}exp(z_m/T)}
+$$
+其中，T代表”温度“
+
+## Towards duration robust weakly supervised sound event detection
+
+### 术语解释
+
+tagging：assign each event a label
+
+localization: provide onset and endpoint of a event
+
+### 目标问题
+
+sound event detection：tagging and localization
+
+难点：
+
+* 单个音频可能包含多个事件（multi-output）
+* 多个事件的起始时间可能重合（multi-label）
+* WSSED localization更难，因为训练和测试不匹配
+
+类别：
+
+* fully supervised SED（time-stamp）
+* weakly supervised SED
+
+### 传统方法
+
+模型：
+
+* CNN：善于tagging
+* CRNN：localiztion更优
+
+temporal pooling strategies（多帧->单帧）：
+
+* attention level pooling更适于CNN
+* max and linear softmax pooling更适于CRNN
+
+post-processing（duration length）：
+
+* 中值滤波器平滑后验：根据阈值处理后验，得到{0,1}序列。然后中值滤波，可以合并和删除较短事件（非事件）
+
+### 本文方法
+
+使用L4-norm temporal subsampling简化模型；
+
+三阈值法（双阈值法的拓展）作用于后处理；
+
+#### 模型结构
+
+CRNN：BN+Conv+LeakyReLU+L4-sub+BiGRU
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/PicGo/CDUR%20architecture.png" style="zoom: 67%;" />
+
+两个output：
+
+* clip-level：训练和推理，用于反向，更新参数
+* frame-level：仅推理
+
+#### Temporal subsampling
+
+沿时间轴的下采样。
+
+L-norm subsampling：
+$$
+L_p(x)=\sqrt[p]{\sum_{x{\in}K}X^p}
+$$
+其中，K表示kernel size。
+
+当p=0时，$L_p$代表mean；p=inf时，$L_p$代表max
+
+#### Temporal Pooling
+
+linear softmax(LinSoft):
+$$
+y(e)=\frac{\sum^T_ty_t(e)^2}{\sum^T_ty_t(e)}
+$$
+一个加权平均算法，无学习参数。
+
+#### Post-processing
+
+Double Threshold：
+
+* 不易受window size影响
+* 太依赖模型的鲁棒性，无法过滤错误预测
+
+Triple Threshold
+
+增加clip-level的阈值。先判断tagging是否包含该事件，若事件发生，再通过双阈值法判断事件起始。
+
+#### Data Augmentation
+
+SpecAug
+
+Timeshifting

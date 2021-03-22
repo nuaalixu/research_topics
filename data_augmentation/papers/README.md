@@ -20,7 +20,6 @@
 
 ![](https://raw.githubusercontent.com/nuaalixu/picBed/master/PicGo/time%20mask.png)
 
-> The log mel spectrograms are normalized to have zero mean value, and thus setting the masked value
-> to zero is equivalent to setting it to the mean value.
+> The log mel spectrograms are normalized to have zero mean value, and thus setting the masked value to zero is equivalent to setting it to the mean value.
 
 [对应代码](https://github.com/DemisEom/SpecAugment)
