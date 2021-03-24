@@ -18,6 +18,34 @@ E2E method(language independent):
 
 
 
+## LANGUAGE INDEPENDENT END-TO-END ARCHITECTURE FOR JOINT LANGUAGE IDENTIFICATION AND SPEECH RECOGNITION
+
+### 目标
+
+语种无关的多语言识别，即一个模型识别多语言。
+
+### 对比方法
+
+### 本文方法
+
+#### 框架
+
+e2e
+
+合并输出label sets
+
+attention/ctc hybrid
+
+> This model compensates too flexible alignment properties in the attention-based method with CTC as a regularization during training and as a score correction during decoding
+
+lid和asr multi-task: lid放在句子开头
+
+### Remark
+
+espnet example有实现。
+
+
+
 ## Multilingual Speech Recognition with Self-Attention Structured Parameterization
 
 ### 目标
