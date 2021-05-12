@@ -44,7 +44,11 @@ lid和asr multi-task: lid放在句子开头
 
 espnet example有实现。
 
+## Large-Scale End-to-End Multilingual Speech Recognition and Language Identification with Multi-Task Learning
 
+### remark:
+
+在前文基础上，语言数量拓展到42种。
 
 ## Multilingual Speech Recognition with Self-Attention Structured Parameterization
 
@@ -94,3 +98,38 @@ Language Dependent Attention Span
 
 本文使用的5种语言，是相互易懂的（同一语系），含有重叠的字母。
 
+## LANGUAGE-AGNOSTIC MULTILINGUAL MODELING
+
+### 目标：
+
+### 创新点：
+
+1.maps all languages to one writing system through a many-to-one transliteration transducer.
+
+2.a strategy to balance the data effectively
+
+## AN END-TO-END LANGUAGE-TRACKING SPEECH RECOGNIZER FOR MIXED-LANGUAGE SPEECH
+
+### 创新点
+
+1.将LID不仅放在句首，而且在Code-Switching处
+
+2.利用单语种数据生成Code-Switching数据
+
+### 算法
+
+#### 模型
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/imgimage-20210402191728446.png" alt="image-20210402191728446" style="zoom:80%;" />
+
+在CS处添加LID标志。
+
+#### 数据生成
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/imgimage-20210402192646212.png" alt="image-20210402192646212" style="zoom:80%;" />
+
+先随机选语种，然后在该语种随机选音频。
+
+选取概率跟语种数量成反相关，为了加强低资源语料的采样次数。
+
+CS语料生成也只是简单的拼接

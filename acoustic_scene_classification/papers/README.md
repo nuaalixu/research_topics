@@ -1,5 +1,17 @@
 # 论文笔记
 
+## Notation
+
+**MIL**
+
+ multiple instance learning. 多个实例组成一个bag，bag里只要有一个instance是正例，那bag的标签应为正例。只有当全部instance为反例时，bag标签为反例。
+
+multiple instance learning assumption是弱监督SED的理论基础。
+
+**CRNN**
+
+ to be robust towards short, sporadic events such as Speech.
+
 ## A Convolutional Neural Network Approach for Acoustic Scene Classification
 
 ### 问题
@@ -224,7 +236,7 @@ focal loss的思想是，通过动态缩放ce loss，来减轻分类正确sample
 $$
 FL(p,y)=-\sum^C_{j=1}(1-p_j)^{\gamma}y_ilog(p_j)
 $$
-其中，通过缩放系数$（1-p_j)^{\gamma}$来控制ce loss的focus到易错类。
+其中，通过缩放系数$(1-p_j)^{\gamma}$来控制ce loss的focus到易错类。
 
 focal loss 在本文中无明显提升，仅为了平等对比。
 
@@ -330,3 +342,42 @@ Triple Threshold
 SpecAug
 
 Timeshifting
+
+## Voice activity detection in the wild via weakly supervised sound event detection
+
+### Motivation
+
+传统有监督的vad方法，在复杂的真实环境下性能退化较大。
+
+真实环境中包含难以预料的噪声类别，所以帧级别的预测非常困难，并且帧级别的预测模型在训练时需要具备有监督的标签。
+
+## Innovation
+
+提出了general-purpose VAD （GPVAD）framework，该框架在训练vad模型时仅需要clip级别的弱标签数据。即使用WSSED的方法训练VAD模型。
+
+**模型结构**
+
+![image-20210507115336719](https://raw.githubusercontent.com/nuaalixu/picBed/master/imgimgimgimage-20210507115336719.png)
+
+CRNN改
+
+1.增加upsampling层，以保证时间维度分辨率不变
+
+2.使用 $L^p$ pooling，p=4
+
+BCEloss
+
+post-processing 双阈值法
+
+## Experiment
+
+抽三条样本，输出每帧后验
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/imgimgimage-20210507161957994.png" alt="image-20210507161957994" style="zoom:80%;" />
+
+1.GPVAD能够建模speech之间的空隙
+
+2.GPVAD能够区分和speech重叠的前景、背景声音
+
+## Remark
+
