@@ -84,7 +84,7 @@ $$
 
 location-based attention：
 
-引入上一步alignment的信息。
+引入前一时刻alignment的信息。
 $$
 \alpha_i=attend(s_{i-1},\alpha_{i-1})
 $$
@@ -190,7 +190,7 @@ $$
 s(\mathbf{y}|\mathbf{x}) = \frac{P(\mathbf{y}|\mathbf{x})}{|y|_c} + \lambda\log{P_{LM}(\mathbf{y})}
 $$
 
-第一部分是e2e模型的分数，因为短句子上模型偏差更小，所以e2e模型分数根据句子长度规整55
+第一部分是e2e模型的分数，因为短句子上模型偏差更小，所以e2e模型分数根据句子长度规整
 
 ### Experiment
 
@@ -324,3 +324,46 @@ $$
 #### Test
 
 beam search
+
+## TRIGGERED ATTENTION FOR END-TO-END SPEECH RECOGNITION
+
+### motivation
+
+受限于没有frame-by-frame的对齐能力，传统的attention-based decoder不适用于流式识别。
+
+原因重点不在于encoder，而在于decoder的attention是全局的。
+
+### innovation
+
+本文重点在于改进decoder的attention机制，使其变成 frame-synchronous。
+
+从ctc的output找到best path，其中非blk的时刻作为decode的trigger。
+
+decoder的attention范围仅从历史看到触发的当前时刻$t$，+ delay。
+
+> During training, forced alignment of the CTC output sequence is used to derive the
+> time instants of the triggering. 
+>
+> During decoding, uncertainties of the CTC trained trigger model are taken into account to generate alternative trigger sequences and output sequences, respectively.
+
+#### model architecture
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/imgimage-20210524190530380.png" alt="image-20210524190530380" style="zoom:80%;" />
+
+### experiment
+
+#### baseline
+
+full sequence attention model。
+
+#### results
+
+triggered attention比full sequcence attention (label synchronous decoding)好。
+
+不同的attention对delay（look ahead frame）需求不同，不是越长越好。
+
+
+
+
+
+​																									
