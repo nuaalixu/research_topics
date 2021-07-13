@@ -362,8 +362,36 @@ triggered attention比full sequcence attention (label synchronous decoding)好�
 
 不同的attention对delay（look ahead frame）需求不同，不是越长越好。
 
+## MINIMUM WORD ERROR RATE TRAINING FOR ATTENTION-BASED SEQUENCE-TO-SEQUENCE MODELS
+### Method
 
+**MWER通用公式**
+$$
+\mathcal{L}_{wer}(\bold{x}, \bold{y}^*)=\mathbb{E}[\mathcal{W}(\bold{y},\bold{y}^*)]=\sum_{\bold{y}}P(\bold{y}|\bold{x})\mathcal{W}(\bold{y},\bold{y}^*)
+$$
+其实计算的是WER的期望，期望 = 概率 x WER值。
 
+期望计算理论上是变量所有取值的和，但是实现困难，所以有以下两种估计方法。
 
+**随机采样实现**
+$$
+\mathcal{L}(\bold{x},\bold{y}^*)\approx\mathcal{L}^{sample}_{werr}(\bold{x},\bold{y}^*)=\frac{1}{N}\sum_{\bold{y}_i\sim P(\bold{y}|\bold{x})}\mathcal{W}(\bold{y}_i,\bold{y}^*)
+$$
+随机变量的取值控制在有限次。
 
-​																									
+**NBest实现**																					
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/imgimage-20210712205150345.png" alt="image-20210712205150345" style="zoom:80%;" />
+
+<img src="https://raw.githubusercontent.com/nuaalixu/picBed/master/imgimage-20210712205218845.png" alt="image-20210712205218845" style="zoom:80%;" />
+
+概率值做了归一化，$\widehat{W}$指的wer平均值，实际上对梯度无影响。
+
+**训练loss**
+
+多目标loss
+$$
+\mathcal{L}^{N-best} = \sum_{(\bold{x},\bold{y}^*)}\mathcal{L}_{werr}^{N-best}(\bold{x},\bold{y}^*) + \lambda\mathcal{L}_{CE}
+$$
+sequence级别loss和frame级别loss联合，有利于训练稳定
+
