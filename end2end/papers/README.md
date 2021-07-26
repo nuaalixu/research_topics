@@ -363,6 +363,10 @@ triggered attention比full sequcence attention (label synchronous decoding)好�
 不同的attention对delay（look ahead frame）需求不同，不是越长越好。
 
 ## MINIMUM WORD ERROR RATE TRAINING FOR ATTENTION-BASED SEQUENCE-TO-SEQUENCE MODELS
+### Abstract
+
+loss函数是WER的期望：将score of hyp看做概率，每条hyp存在wer，score和wer的加权和看做概率。
+
 ### Method
 
 **MWER通用公式**
