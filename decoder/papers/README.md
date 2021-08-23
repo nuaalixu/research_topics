@@ -6,12 +6,24 @@ decode formulation
 $$
 \hat{W}=arg\max_{W}{P(O|W)P(W)}
 $$
-in HMM and CW modelling
+introduce phone $V$
 $$
-\hat{w}_1^n=arg\max_{w_1^n}\{P(w_1^n)\cdot \sum_{s_1^T}P(o_1^T,s_1^T|w_1^n)\}\\
-\approx arg\max_{w_1^n}\{P(w_1^n)\cdot\max_{s_1^T}P(o_1^T,s_1^T|w_1^n)\}\\
-\approx arg\max_{w_1^n}\{P(w_1^n)\cdot\max_{s_1^T}\prod_{i=1}^TP(o_t,s_t|s_{t-1},w^N_1)
+\hat{W}=arg\max_W\sum_{V}P(O|V,W)P(V|W)P(W) \\
+\approx arg\max_W\{{\max_V{P_H(O|V)P_L(V|W)P_G(W)\}}}
 $$
+in HMM and language modelling
+$$
+\hat{w}_1^n=arg\max_{w_1^N}\{P(w_1^N)\cdot \sum_{s_1^T}P(o_1^T,s_1^T|w_1^N)\}\\
+\approx arg\max_{w_1^n}\{P(w_1^n)\cdot\max_{s_1^T}P(o_1^T,s_1^T|w_1^N)\}\qquad\#Veterbi\ approximation\\
+\approx arg\max_{w_1^N}\{P(w_1^N)\cdot\max_{s_1^T}\prod_{i=1}^TP(o_t,s_t|s_{t-1},w^N_1) \qquad \#HMM\ assumption\\
+\approx arg\max_{w_1^n}\{P(w_1^N)\cdot\max_{s_1^T}\prod_{i=1}^T P(o_t|s_t,w_1^N)\cdot P(s_t|s_{t-1},w_1^N) \qquad\# HMM\ assumption
+$$
+
+implied constraint
+$$
+map(s_1^T) = w_1^N
+$$
+
 
 recombination principle
 *Select the “best” among several paths in the network as soon as it appears that these paths have identically scored extensions, implying that the current best path will keep dominating the others.*
