@@ -12,3 +12,8 @@
 
 - certainty-based
 - committee-based
+
+## 相关论文
+### Sequence-level Confidence Classifier for ASR Utterance Accuracy and Application to Acoustic Models
+
+### Utterance Confidence Measure for End-to-End Speech Recognition with Applications to Distributed Speech Recognition Scenarios
